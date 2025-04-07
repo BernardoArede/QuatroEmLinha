@@ -1,66 +1,61 @@
 .board-container {
-    text-align: center;
-    padding: 20px;
-    
-  }
-  
-  .game-board {
-    display: inline-block;
-    margin-top: 20px;
-    position: relative;
-  }
-  
-  .board-row {
-    display: flex;
-  }
-  
-  .cell {
-    width: 60px;
-    height: 60px;
-    border: 2px solid #333;
-    background-color: #ddd;
-    border-radius: 50%;
-    margin: 2px;
-    cursor: pointer;
-    position: relative;
-    transition: background-color 0.3s ease;
-  }
-  
-  .cell.R {
-    background-color: red;
-  }
-  
-  .cell.Y {
-    background-color: yellow;
-  }
-  
-  .indicator {
-    position: absolute;
-    top: -20px; 
-    width: 60px;
-    height: 60px;
-    background-color: rgba(0, 0, 0, 0.2); 
-    border-radius: 50%;
-    transition: left 0.1s ease;
-  }
-  
-  .piece {
-    width: 60px;
-    height: 60px;
-    background-color: currentColor;
-    border-radius: 50%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    animation: drop 1s ease-out forwards;
-  }
-  
-  @keyframes drop {
-    0% {
-      top: -100px; 
-    }
-    100% {
-      top: 0; 
-    }
-  }
-  
+  text-align: center;
+  padding: 20px;
+}
+
+.game-board {
+  display: inline-block;
+  margin-top: 20px;
+  position: relative;
+  background-color: #0066cc; /* azul do tabuleiro */
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #0004;
+}
+
+.board-row {
+  display: flex;
+}
+
+.cell {
+  width: 64px;
+  height: 64px;
+  margin: 1px;
+  background-color: white;
+  border-radius: 50%;
+  position: relative;
+  transition: background-color 0.2s ease;
+  box-shadow: inset 0 0 5px #0005;
+  cursor: pointer;
+}
+.cell.R {
+  background-color: red;
+}
+
+.cell.Y {
+  background-color: yellow;
+}
+
+.cell.highlight {
+  outline: 3px solid #ffffff88;
+  outline-offset: -2px;
+}
+
+.indicator {
+  position: absolute;
+  top: -70px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  transition: left 0.1s ease;
+  z-index: 2;
+}
+
+.indicator.R {
+  background-color: red;
+}
+
+.indicator.Y {
+  background-color: yellow;
+}
+

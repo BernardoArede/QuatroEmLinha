@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import "../styles/GameBoard.css"; // CSS para a parte visual
+import "../styles/GameBoard.css";
 
 function GameBoard() {
   const location = useLocation();
@@ -17,27 +17,43 @@ function GameBoard() {
   const rows = 6;
   const cols = 7;
 
-  const [board, setBoard] = useState(Array(rows).fill().map(() => Array(cols).fill("")));
+  const [board, setBoard] = useState(
+    Array(rows)
+      .fill()
+      .map(() => Array(cols).fill(""))
+  );
   const [currentPlayer, setCurrentPlayer] = useState("R"); // "R" = Vermelho, "Y" = Amarelo
-  const [hoveredCol, setHoveredCol] = useState(null); // Coluna que está sendo "hovered"
-  const [droppingPiece, setDroppingPiece] = useState(null); // Indica se estamos em modo de animação de queda
+  const [hoveredCol, setHoveredCol] = useState(null);
+  const [droppingPiece, setDroppingPiece] = useState(null);
 
   const handleColumnClick = (col) => {
+    if (droppingPiece) return;
+
     for (let row = rows - 1; row >= 0; row--) {
       if (board[row][col] === "") {
-        const newBoard = board.map((r) => [...r]);
-        newBoard[row][col] = currentPlayer;
-        setBoard(newBoard);
-        setCurrentPlayer(currentPlayer === "R" ? "Y" : "R");
-        startPieceDrop(row, col); // Chama o método de animação
+        startPieceDrop(row, col, currentPlayer);
         break;
       }
     }
   };
 
-  const startPieceDrop = (row, col) => {
-    // Inicia a animação da peça descendo pela coluna
-    setDroppingPiece({ row, col });
+  const startPieceDrop = (targetRow, col, player) => {
+    let visualRow = -1;
+    setDroppingPiece({ row: visualRow, col, player });
+
+    const dropInterval = setInterval(() => {
+      visualRow++;
+      if (visualRow > targetRow) {
+        clearInterval(dropInterval);
+        const newBoard = board.map((r) => [...r]);
+        newBoard[targetRow][col] = player;
+        setBoard(newBoard);
+        setCurrentPlayer(player === "R" ? "Y" : "R");
+        setDroppingPiece(null);
+      } else {
+        setDroppingPiece({ row: visualRow, col, player });
+      }
+    }, 70);
   };
 
   const handleMouseEnter = (col) => {
@@ -50,25 +66,40 @@ function GameBoard() {
 
   return (
     <div className="board-container">
-      <h2>Modo de Jogo: {gameMode === "pvp" ? "Jogador vs Jogador" : "Jogador vs Computador"}</h2>
-      <h3>Jogador Atual: {currentPlayer === "R" ? player1 : (gameMode === "pvp" ? player2 : "Computador")}</h3>
+      <h2>
+        Modo de Jogo: {gameMode === "pvp" ? "Jogador vs Jogador" : "Jogador vs Computador"}
+      </h2>
+      <h3>
+        Jogador Atual: {currentPlayer === "R" ? player1 : gameMode === "pvp" ? player2 : "Computador"}
+      </h3>
 
       <div className="game-board">
-        <div className="indicator" style={{ left: hoveredCol !== null ? `${hoveredCol * 70  }px` : "0px" }}>
-          <div className="piece-indicator" />
-        </div>
+        {hoveredCol !== null && (
+          <div
+            className={`indicator ${currentPlayer}`}
+            style={{ left: `${hoveredCol * 66 + 10}px` }}
+          />
+        )}
 
         {board.map((row, rowIndex) => (
           <div key={rowIndex} className="board-row">
-            {row.map((cell, colIndex) => (
-              <div
-                key={colIndex}
-                className={`cell ${cell} ${droppingPiece?.col === colIndex && droppingPiece?.row === rowIndex ? "dropping" : ""}`}
-                onClick={() => handleColumnClick(colIndex)}
-                onMouseEnter={() => handleMouseEnter(colIndex)}
-                onMouseLeave={handleMouseLeave}
-              ></div>
-            ))}
+            {row.map((cell, colIndex) => {
+              const isDropping =
+                droppingPiece &&
+                droppingPiece.row === rowIndex &&
+                droppingPiece.col === colIndex;
+              const pieceColor = isDropping ? droppingPiece.player : cell;
+
+              return (
+                <div
+                  key={colIndex}
+                  className={`cell ${pieceColor} ${hoveredCol === colIndex ? "highlight" : ""}`}
+                  onClick={() => handleColumnClick(colIndex)}
+                  onMouseEnter={() => handleMouseEnter(colIndex)}
+                  onMouseLeave={handleMouseLeave}
+                ></div>
+              );
+            })}
           </div>
         ))}
       </div>
