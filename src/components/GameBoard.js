@@ -22,7 +22,7 @@ function GameBoard() {
       .fill()
       .map(() => Array(cols).fill(""))
   );
-  const [currentPlayer, setCurrentPlayer] = useState("R"); // "R" = Vermelho, "Y" = Amarelo
+  const [currentPlayer, setCurrentPlayer] = useState("R"); 
   const [hoveredCol, setHoveredCol] = useState(null);
   const [droppingPiece, setDroppingPiece] = useState(null);
 
@@ -53,7 +53,7 @@ function GameBoard() {
       } else {
         setDroppingPiece({ row: visualRow, col, player });
       }
-    }, 70);
+    }, 150);
   };
 
   const handleMouseEnter = (col) => {
