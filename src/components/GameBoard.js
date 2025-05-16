@@ -8,6 +8,44 @@ function GameBoard() {
 
   const { player1, player2, gameMode } = location.state || {};
 
+  const [winner, setWinner] = useState(null);
+
+
+  const checkWinner = (board) => {
+  const directions = [
+    { x: 1, y: 0 }, // horizontal
+    { x: 0, y: 1 }, // vertical
+    { x: 1, y: 1 }, // diagonal \
+    { x: 1, y: -1 } // diagonal /
+  ];
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const player = board[row][col];
+      if (!player) continue;
+
+      for (const { x, y } of directions) {
+        let count = 1;
+
+        for (let i = 1; i < 4; i++) {
+          const r = row + y * i;
+          const c = col + x * i;
+          if (r < 0 || r >= rows || c < 0 || c >= cols || board[r][c] !== player) break;
+          count++;
+        }
+
+        if (count === 4) {
+          return player;
+        }
+      }
+    }
+  }
+
+  return null;
+};
+
+
+
   useEffect(() => {
     if (!player1 || (gameMode === "pvp" && !player2)) {
       navigate("/");
@@ -27,7 +65,7 @@ function GameBoard() {
   const [droppingPiece, setDroppingPiece] = useState(null);
 
   const handleColumnClick = (col) => {
-    if (droppingPiece) return;
+    if (droppingPiece || winner) return;
 
     for (let row = rows - 1; row >= 0; row--) {
       if (board[row][col] === "") {
@@ -35,6 +73,7 @@ function GameBoard() {
         break;
       }
     }
+    setDroppingPiece(null);
   };
 
   const startPieceDrop = (targetRow, col, player) => {
@@ -48,13 +87,21 @@ function GameBoard() {
         const newBoard = board.map((r) => [...r]);
         newBoard[targetRow][col] = player;
         setBoard(newBoard);
-        setCurrentPlayer(player === "R" ? "Y" : "R");
+
+        const result = checkWinner(newBoard);
+        if (result) {
+          setWinner(result);
+        } else {
+          setCurrentPlayer(player === "R" ? "Y" : "R");
+        }
+
         setDroppingPiece(null);
       } else {
         setDroppingPiece({ row: visualRow, col, player });
       }
     }, 150);
   };
+
 
   const handleMouseEnter = (col) => {
     setHoveredCol(col);
@@ -64,6 +111,14 @@ function GameBoard() {
     setHoveredCol(null);
   };
 
+  const resetGame = () => {
+  setBoard(Array(rows).fill().map(() => Array(cols).fill("")));
+  setCurrentPlayer("R");
+  setWinner(null);
+  setDroppingPiece(null);
+};
+
+
   return (
     <div className="board-container">
       <h2>
@@ -72,6 +127,13 @@ function GameBoard() {
       <h3>
         Jogador Atual: {currentPlayer === "R" ? player1 : gameMode === "pvp" ? player2 : "Computador"}
       </h3>
+
+      {winner && (
+        <div className="winner-message">
+          <h2>🎉 {winner === "R" ? player1 : gameMode === "pvp" ? player2 : "Computador"} venceu!</h2>
+        </div>
+      )}
+
 
       <div className="game-board">
         {hoveredCol !== null && (
@@ -103,7 +165,23 @@ function GameBoard() {
           </div>
         ))}
       </div>
-    </div>
+      
+      <div className = "buttons-container">
+
+          <button
+            className =  "homeButton"
+            onClick={() => navigate("/")}> 
+            Home
+          </button>
+          <button
+            className =  "restartButton"
+            onClick={resetGame}> 
+            Restart
+          </button>
+
+      </div>
+  </div>
+    
   );
 }
 
