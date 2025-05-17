@@ -59,6 +59,12 @@
   background-color: yellow;
 }
 
+.special {
+  border: 2px solid gold;
+  box-shadow: 0 0 12px gold;
+}
+
+
 .homeButton{
   background: #667eea;
     color: white;
