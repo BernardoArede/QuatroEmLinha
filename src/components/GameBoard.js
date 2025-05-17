@@ -7,8 +7,7 @@ function GameBoard() {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState(10);
 
-
-  const { player1, player2, gameMode } = location.state || {};
+  const { player1: initialPlayer1, player2: initialPlayer2, gameMode } = location.state || {};
 
   const rows = 6;
   const cols = 7;
@@ -34,6 +33,12 @@ function GameBoard() {
   const [currentPlayer, setCurrentPlayer] = useState("R");
   const [hoveredCol, setHoveredCol] = useState(null);
   const [droppingPiece, setDroppingPiece] = useState(null);
+  const [showNameChoice, setShowNameChoice] = useState(false);
+  const [showNameForm, setShowNameForm] = useState(false);
+  const [player1, setPlayer1] = useState(initialPlayer1 || "");
+  const [player2, setPlayer2] = useState(initialPlayer2 || "");
+  const [newPlayer1, setNewPlayer1] = useState("");
+  const [newPlayer2, setNewPlayer2] = useState("");
 
   useEffect(() => {
     if (!player1 || (gameMode === "pvp" && !player2)) {
@@ -42,23 +47,21 @@ function GameBoard() {
   }, [player1, player2, gameMode, navigate]);
 
   useEffect(() => {
-  if (winner || droppingPiece) return;
+  if (winner || droppingPiece || showNameChoice || showNameForm) return;
 
   const timer = setInterval(() => {
     setTimeLeft((prevTime) => prevTime - 1);
   }, 1000);
 
   return () => clearInterval(timer);
-  }, [currentPlayer, winner, droppingPiece]);
+  }, [currentPlayer, winner, droppingPiece, showNameChoice, showNameForm]);
 
   useEffect(() => {
-  if (timeLeft <= 0 && !winner && !droppingPiece) {
-    setCurrentPlayer((prev) => (prev === "R" ? "Y" : "R"));
-    setTimeLeft(10);
-  }
+    if (timeLeft <= 0 && !winner && !droppingPiece) {
+      setCurrentPlayer((prev) => (prev === "R" ? "Y" : "R"));
+      setTimeLeft(10);
+    }
   }, [timeLeft, winner, droppingPiece]);
-
-
 
   const checkWinner = (board) => {
     const directions = [
@@ -149,6 +152,30 @@ function GameBoard() {
     setTimeLeft(10);
   };
 
+  const handleRestart = () => {
+    setShowNameChoice(true);
+  };
+
+  const handleSameNames = () => {
+    resetGame();
+    setShowNameChoice(false);
+  };
+
+  const handleDifferentNames = () => {
+    setShowNameChoice(false);
+    setShowNameForm(true);
+    setNewPlayer1("");
+    setNewPlayer2("");
+  };
+
+  const handleSubmitNames = (e) => {
+    e.preventDefault();
+    setPlayer1(newPlayer1);
+    setPlayer2(newPlayer2);
+    resetGame();
+    setShowNameForm(false);
+  };
+
   return (
     <div className="board-container">
       <h2>
@@ -201,13 +228,46 @@ function GameBoard() {
       </div>
 
       <div className="buttons-container">
-        <button className="homeButton" onClick={() => navigate("/")}>
-          Home
-        </button>
-        <button className="restartButton" onClick={resetGame}>
-          Restart
-        </button>
+        <button className="homeButton" onClick={() => navigate("/")}>Home</button>
+        <button className="restartButton" onClick={handleRestart}>Restart</button>
       </div>
+
+      {showNameChoice && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Queres manter os nomes atuais?</h3>
+            <button onClick={handleSameNames}>Sim</button>
+            <button onClick={handleDifferentNames}>Não</button>
+          </div>
+        </div>
+      )}
+
+      {showNameForm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Insere os novos nomes:</h3>
+            <form onSubmit={handleSubmitNames}>
+              <input
+                type="text"
+                placeholder="Nome Jogador 1"  
+                value={newPlayer1}
+                onChange={(e) => setNewPlayer1(e.target.value)}
+                required
+              />
+              {gameMode === "pvp" && (
+                <input
+                  type="text"
+                  placeholder="Nome Jogador 2"
+                  value={newPlayer2}
+                  onChange={(e) => setNewPlayer2(e.target.value)}
+                  required
+                />
+              )}
+              <button type="submit">Começar</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
