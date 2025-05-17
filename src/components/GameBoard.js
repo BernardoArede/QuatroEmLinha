@@ -5,6 +5,8 @@ import "../styles/GameBoard.css";
 function GameBoard() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [timeLeft, setTimeLeft] = useState(10);
+
 
   const { player1, player2, gameMode } = location.state || {};
 
@@ -38,6 +40,25 @@ function GameBoard() {
       navigate("/");
     }
   }, [player1, player2, gameMode, navigate]);
+
+  useEffect(() => {
+  if (winner || droppingPiece) return;
+
+  const timer = setInterval(() => {
+    setTimeLeft((prevTime) => prevTime - 1);
+  }, 1000);
+
+  return () => clearInterval(timer);
+  }, [currentPlayer, winner, droppingPiece]);
+
+  useEffect(() => {
+  if (timeLeft <= 0 && !winner && !droppingPiece) {
+    setCurrentPlayer((prev) => (prev === "R" ? "Y" : "R"));
+    setTimeLeft(10);
+  }
+  }, [timeLeft, winner, droppingPiece]);
+
+
 
   const checkWinner = (board) => {
     const directions = [
@@ -109,6 +130,7 @@ function GameBoard() {
         }
 
         setDroppingPiece(null);
+        setTimeLeft(10);
       } else {
         setDroppingPiece({ row: visualRow, col, player });
       }
@@ -124,6 +146,7 @@ function GameBoard() {
     setWinner(null);
     setDroppingPiece(null);
     setSpecialSpaces(getRandomSpecialSpaces());
+    setTimeLeft(10);
   };
 
   return (
@@ -134,6 +157,8 @@ function GameBoard() {
       <h3>
         Jogador Atual: {currentPlayer === "R" ? player1 : gameMode === "pvp" ? player2 : "Computador"}
       </h3>
+
+      <h4>⏱ Tempo restante: {timeLeft}s</h4>
 
       {winner && (
         <div className="winner-message">
