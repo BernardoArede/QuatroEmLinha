@@ -138,6 +138,52 @@
   background: #564db0;
 }
 
+.timer-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.timer-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #4CAF50 var(--time-left),
+    #f44336 var(--time-left)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.timer-circle::before {
+  content: '';
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: white;
+}
+
+.timer-content {
+  z-index: 1;
+  text-align: center;
+}
+
+.timer-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Adicione isso se quiser uma animação suave */
+.timer-circle {
+  transition: background 0.5s ease;
+}
+
 @media (max-width: 600px) {
   .cell {
     width: 50px;

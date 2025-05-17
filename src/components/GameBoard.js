@@ -193,7 +193,13 @@ function GameBoard() {
         Jogador Atual: {currentPlayer === "R" ? player1 : gameMode === "pvp" ? player2 : "Computador"}
       </h3>
 
-      <h4>⏱ Tempo restante: {timeLeft}s</h4>
+      <div className="timer-container">
+        <div className="timer-circle" style={{ '--time-left': `${(timeLeft / 10) * 100}%` }}>
+          <div className="timer-content">
+            <span className="timer-text">{timeLeft}s</span>
+          </div>
+        </div>
+      </div>
 
       {winner && (
         <div className="winner-message">
