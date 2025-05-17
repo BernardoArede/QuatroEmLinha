@@ -70,6 +70,7 @@ function GameBoard() {
       { x: 1, y: 1 },
       { x: 1, y: -1 }
     ];
+    
 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
@@ -95,6 +96,11 @@ function GameBoard() {
 
     return null;
   };
+
+  const isBoardFull = (board) => {
+  return board.every(row => row.every(cell => cell !== ""));
+  };
+
 
   const handleColumnClick = (col) => {
     if (droppingPiece || winner) return;
@@ -126,6 +132,8 @@ function GameBoard() {
 
         if (result) {
           setWinner(result);
+        } else if (isBoardFull(newBoard)) {
+          setWinner("draw");
         } else {
           if (!isSpecialSpot) {
             setCurrentPlayer(player === "R" ? "Y" : "R");
@@ -189,7 +197,11 @@ function GameBoard() {
 
       {winner && (
         <div className="winner-message">
-          <h2>🎉 {winner === "R" ? player1 : gameMode === "pvp" ? player2 : "Computador"} venceu!</h2>
+          {winner === "draw" ? (
+            <h2>😐 Empate!</h2>
+          ) : (
+            <h2>🎉 {winner === "R" ? player1 : gameMode === "pvp" ? player2 : "Computador"} venceu!</h2>
+          )}
         </div>
       )}
 
