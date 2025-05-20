@@ -63,6 +63,20 @@ function GameBoard() {
     }
   }, [timeLeft, winner, droppingPiece]);
 
+  useEffect(() => {
+  if (gameMode === "pvc" && currentPlayer === "Y" && !winner && !droppingPiece && !showNameChoice && !showNameForm) {
+    const botDelay = setTimeout(() => {
+      const botCol = getBotMove();
+      if (botCol !== undefined) {
+        handleColumnClick(botCol);
+      }
+    }, 1000); 
+
+    return () => clearTimeout(botDelay);
+  }
+  }, [gameMode, currentPlayer, winner, droppingPiece, board, showNameChoice, showNameForm]);
+
+
   const checkWinner = (board) => {
     const directions = [
       { x: 1, y: 0 },
@@ -97,6 +111,8 @@ function GameBoard() {
     return null;
   };
 
+  
+
   const isBoardFull = (board) => {
   return board.every(row => row.every(cell => cell !== ""));
   };
@@ -112,6 +128,43 @@ function GameBoard() {
       }
     }
   };
+
+  const getBotMove = () => {
+  for (let col = 0; col < cols; col++) {
+    const row = getAvailableRow(board, col);
+    if (row === -1) continue;
+
+    const tempBoard = board.map((r) => [...r]);
+    tempBoard[row][col] = "Y";
+    if (checkWinner(tempBoard) === "Y") return col;
+  }
+
+  for (let col = 0; col < cols; col++) {
+    const row = getAvailableRow(board, col);
+    if (row === -1) continue;
+
+    const tempBoard = board.map((r) => [...r]);
+    tempBoard[row][col] = "R";
+    if (checkWinner(tempBoard) === "R") return col;
+  }
+
+  const center = Math.floor(cols / 2);
+  if (getAvailableRow(board, center) !== -1) return center;
+  
+  const validCols = [];
+  for (let col = 0; col < cols; col++) {
+    if (getAvailableRow(board, col) !== -1) validCols.push(col);
+  }
+  return validCols[Math.floor(Math.random() * validCols.length)];
+};
+
+const getAvailableRow = (board, col) => {
+  for (let row = rows - 1; row >= 0; row--) {
+    if (board[row][col] === "") return row;
+  }
+  return -1;
+};
+
 
   const startPieceDrop = (targetRow, col, player) => {
     let visualRow = -1;
