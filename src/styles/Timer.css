@@ -1,0 +1,34 @@
+/* src/styles/Timer.css */
+.timer-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.timer-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #ffcc00 calc(var(--time-left, 100%) * 1%),
+    #ddd 0
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-content {
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-text {
+  font-size: 18px;
+  font-weight: bold;
+}

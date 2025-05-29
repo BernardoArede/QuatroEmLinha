@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/GameBoard.css";
+import Timer from "../components/Timer";
 
 function GameBoard() {
   const location = useLocation();
@@ -246,14 +247,8 @@ const getAvailableRow = (board, col) => {
         Jogador Atual: {currentPlayer === "R" ? player1 : gameMode === "pvp" ? player2 : "Computador"}
       </h3>
 
-      <div className="timer-container">
-        <div className="timer-circle" style={{ '--time-left': `${(timeLeft / 10) * 100}%` }}>
-          <div className="timer-content">
-            <span className="timer-text">{timeLeft}s</span>
-          </div>
-        </div>
-      </div>
-
+    <Timer timeLeft={timeLeft}/>
+    
       {winner && (
         <div className="winner-message">
           {winner === "draw" ? (
